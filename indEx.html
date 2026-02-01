@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Shreya Srivastava - Cloud & Blockchain Developer | B.Tech CSE (Cloud Computing) | AWS Certified">
+  <title>Shreya Srivastava | Cloud & Blockchain Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --card: rgba(20, 20, 20, 0.8);
+      --violet: #8b5cf6;
+      --purple: #a855f7;
+      --pink: #ec4899;
+      --cyan: #22d3ee;
+      --blue: #3b82f6;
+      --text: #fafafa;
+      --muted: #71717a;
+      --border: rgba(255,255,255,0.1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    
+    /* Loading Screen */
+    .loader {
+      position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+    .loader.hidden { opacity: 0; visibility: hidden; }
+    .loader-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 1.5rem;
+      color: var(--violet); overflow: hidden;
+    }
+    .loader-text span { display: inline-block; animation: loadPulse 1.5s infinite; }
+    .loader-text span:nth-child(2) { animation-delay: 0.1s; }
+    .loader-text span:nth-child(3) { animation-delay: 0.2s; }
+    .loader-text span:nth-child(4) { animation-delay: 0.3s; }
+    .loader-text span:nth-child(5) { animation-delay: 0.4s; }
+    .loader-text span:nth-child(6) { animation-delay: 0.5s; }
+    .loader-text span:nth-child(7) { animation-delay: 0.6s; }
+    @keyframes loadPulse {
+      0%, 100% { opacity: 0.3; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-5px); }
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.6; overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Magnetic Cursor */
+    .cursor-dot {
+      position: fixed; width: 8px; height: 8px;
+      background: var(--violet); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transition: transform 0.1s;
+    }
+    .cursor-outline {
+      position: fixed; width: 40px; height: 40px;
+      border: 2px solid var(--violet); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transition: all 0.15s ease-out;
+      mix-blend-mode: difference;
+    }
+    .cursor-outline.hover {
+      width: 60px; height: 60px;
+      border-color: var(--cyan);
+      background: rgba(34, 211, 238, 0.1);
+    }
+
+    /* Aurora Background */
+    .aurora {
+      position: fixed; inset: 0; z-index: -2; overflow: hidden;
+      background: var(--bg);
+    }
+    .aurora::before, .aurora::after {
+      content: ''; position: absolute; width: 150%; height: 150%;
+      background: conic-gradient(from 0deg at 50% 50%, 
+        transparent 0deg, var(--violet) 60deg, transparent 120deg,
+        var(--cyan) 180deg, transparent 240deg, var(--pink) 300deg, transparent 360deg);
+      opacity: 0.15; filter: blur(100px);
+      animation: aurora 20s linear infinite;
+    }
+    .aurora::after { animation-delay: -10s; animation-direction: reverse; }
+    @keyframes aurora { 100% { transform: rotate(360deg); } }
+
+    /* Noise Overlay */
+    .noise {
+      position: fixed; inset: 0; z-index: -1;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.03; pointer-events: none;
+    }
+
+    /* Mouse Glow */
+    .mouse-glow {
+      position: fixed; width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+      pointer-events: none; z-index: -1;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 1000;
+      padding: 24px 48px; display: flex; justify-content: space-between; align-items: center;
+      transition: all 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+      padding: 16px 48px; border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-size: 1.5rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 48px; list-style: none; }
+    .nav-links a {
+      color: var(--muted); font-size: 0.9rem; font-weight: 500;
+      text-decoration: none; position: relative;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px; background: var(--violet);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding: 0 48px; position: relative;
+    }
+    .hero-content { max-width: 900px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 100px;
+      font-size: 0.8rem; font-weight: 500; color: var(--violet);
+      margin-bottom: 32px; font-family: 'JetBrains Mono', monospace;
+    }
+    .hero-badge::before {
+      content: ''; width: 8px; height: 8px; background: #22c55e;
+      border-radius: 50%; animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 6rem); font-weight: 700;
+      line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+    .hero h1 .line { display: block; overflow: hidden; }
+    .hero h1 .line span {
+      display: inline-block;
+      animation: slideUp 1s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+      opacity: 0; transform: translateY(100%);
+    }
+    .hero h1 .line:nth-child(2) span { animation-delay: 0.1s; }
+    .hero h1 .line:nth-child(3) span { animation-delay: 0.2s; }
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--violet), var(--pink), var(--cyan));
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: gradient 4s linear infinite;
+    }
+    @keyframes gradient { 100% { background-position: 200% center; } }
+
+    /* Glitch Effect */
+    .glitch { position: relative; }
+    .glitch::before, .glitch::after {
+      content: attr(data-text); position: absolute; left: 0; top: 0;
+      width: 100%; height: 100%; overflow: hidden;
+    }
+    .glitch::before {
+      left: 2px; text-shadow: -2px 0 var(--pink);
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch1 3s infinite linear alternate-reverse;
+    }
+    .glitch::after {
+      left: -2px; text-shadow: 2px 0 var(--cyan);
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch2 2s infinite linear alternate-reverse;
+    }
+    @keyframes glitch1 {
+      0% { clip: rect(31px, 9999px, 94px, 0); } 20% { clip: rect(85px, 9999px, 77px, 0); }
+      40% { clip: rect(64px, 9999px, 98px, 0); } 60% { clip: rect(99px, 9999px, 114px, 0); }
+      80% { clip: rect(98px, 9999px, 129px, 0); } 100% { clip: rect(82px, 9999px, 68px, 0); }
+    }
+    @keyframes glitch2 {
+      0% { clip: rect(129px, 9999px, 36px, 0); } 20% { clip: rect(85px, 9999px, 66px, 0); }
+      40% { clip: rect(148px, 9999px, 138px, 0); } 60% { clip: rect(69px, 9999px, 54px, 0); }
+      80% { clip: rect(146px, 9999px, 34px, 0); } 100% { clip: rect(102px, 9999px, 111px, 0); }
+    }
+
+    .hero-sub {
+      font-size: 1.25rem; color: var(--muted); max-width: 550px;
+      margin-bottom: 48px; line-height: 1.7;
+    }
+
+    .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 32px; border-radius: 12px; font-size: 1rem; font-weight: 600;
+      text-decoration: none; transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--violet), var(--purple));
+      color: white; border: none;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary span { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; }
+    .btn-secondary {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--violet); background: rgba(139, 92, 246, 0.1); }
+
+    /* Scroll Indicator */
+    .scroll-indicator {
+      position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--muted); font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
+    }
+    .scroll-indicator .line {
+      width: 1px; height: 60px; background: linear-gradient(to bottom, var(--violet), transparent);
+      animation: scrollLine 2s infinite;
+    }
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      51% { transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* Marquee */
+    .marquee {
+      padding: 24px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      overflow: hidden; background: var(--surface);
+    }
+    .marquee-track { display: flex; animation: marquee 30s linear infinite; }
+    .marquee-content {
+      display: flex; gap: 48px; padding: 0 24px;
+      font-size: 1.5rem; font-weight: 600; color: var(--muted);
+      white-space: nowrap;
+    }
+    .marquee-content span { display: flex; align-items: center; gap: 16px; }
+    .marquee-content .dot { width: 8px; height: 8px; background: var(--violet); border-radius: 50%; }
+    @keyframes marquee { 100% { transform: translateX(-50%); } }
+
+    /* Section */
+    section { padding: 120px 48px; }
+    .section-header { margin-bottom: 80px; }
+    .section-label {
+      display: inline-block; padding: 6px 12px;
+      background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3);
+      border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+      color: var(--cyan); font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* Bento Grid */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto;
+      gap: 24px;
+    }
+    .bento-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 32px; position: relative;
+      overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .bento-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--violet);
+      box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
+    }
+    .bento-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), transparent);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .bento-card:hover::before { opacity: 1; }
+    .bento-card.large { grid-column: span 2; }
+    .bento-card.tall { grid-row: span 2; }
+    .bento-icon {
+      width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+      background: rgba(139, 92, 246, 0.1); border-radius: 12px;
+      font-size: 1.5rem; color: var(--violet); margin-bottom: 24px;
+    }
+    .bento-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .bento-card p { color: var(--muted); font-size: 0.9375rem; }
+
+    /* Education Card */
+    .edu-item { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .edu-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .edu-year { font-size: 0.75rem; color: var(--cyan); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
+    .edu-degree { font-weight: 600; margin-bottom: 4px; }
+    .edu-school { font-size: 0.875rem; color: var(--muted); }
+    .edu-score { font-size: 0.8rem; color: var(--violet); margin-top: 4px; }
+
+    /* Projects */
+    .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+    .project-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; overflow: hidden;
+      transition: all 0.4s;
+    }
+    .project-card:hover { transform: translateY(-8px); border-color: var(--violet); }
+    .project-image {
+      height: 200px; background: linear-gradient(135deg, var(--surface) 0%, var(--bg) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem; position: relative; overflow: hidden;
+    }
+    .project-image i { color: var(--violet); opacity: 0.2; transition: all 0.4s; }
+    .project-card:hover .project-image i { opacity: 0.4; transform: scale(1.1); }
+    .project-image::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+    }
+    .project-content { padding: 28px; }
+    .project-year { font-size: 0.75rem; color: var(--cyan); font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; }
+    .project-tags { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .project-tag {
+      padding: 4px 10px; background: rgba(139, 92, 246, 0.1);
+      border-radius: 6px; font-size: 0.7rem; font-weight: 600;
+      color: var(--violet); font-family: 'JetBrains Mono', monospace;
+    }
+    .project-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; }
+    .project-desc { color: var(--muted); font-size: 0.875rem; margin-bottom: 16px; line-height: 1.6; }
+    .project-highlights { list-style: none; margin-bottom: 20px; }
+    .project-highlights li {
+      font-size: 0.8rem; color: var(--muted); padding-left: 16px;
+      position: relative; margin-bottom: 6px;
+    }
+    .project-highlights li::before {
+      content: '▹'; position: absolute; left: 0; color: var(--violet);
+    }
+    .project-links { display: flex; gap: 16px; }
+    .project-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--text); font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; transition: color 0.3s;
+    }
+    .project-link:hover { color: var(--violet); }
+
+    /* Skills */
+    .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .skill-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px; transition: all 0.4s;
+    }
+    .skill-card:hover { transform: translateY(-8px); border-color: var(--violet); }
+    .skill-card h4 {
+      font-size: 1rem; font-weight: 600; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .skill-card h4 i { color: var(--violet); }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-tag {
+      padding: 6px 12px; background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 8px;
+      font-size: 0.75rem; font-weight: 500; color: var(--violet);
+      font-family: 'JetBrains Mono', monospace; transition: all 0.3s;
+    }
+    .skill-tag:hover { background: rgba(139, 92, 246, 0.2); border-color: var(--violet); }
+
+    /* Certifications */
+    .cert-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .cert-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px; transition: all 0.4s;
+      display: flex; align-items: flex-start; gap: 20px;
+    }
+    .cert-card:hover { transform: translateY(-4px); border-color: var(--violet); }
+    .cert-icon {
+      width: 48px; height: 48px; min-width: 48px;
+      background: rgba(139, 92, 246, 0.1); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; color: var(--violet);
+    }
+    .cert-content h4 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+    .cert-content p { font-size: 0.875rem; color: var(--muted); margin-bottom: 4px; }
+    .cert-date { font-size: 0.75rem; color: var(--cyan); font-family: 'JetBrains Mono', monospace; }
+
+    /* Activities */
+    .activities-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .activity-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 20px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; transition: all 0.3s;
+    }
+    .activity-item:hover { border-color: var(--violet); }
+    .activity-item i { color: var(--violet); font-size: 1.25rem; }
+    .activity-item span { font-size: 0.9375rem; }
+
+    /* Contact */
+    .contact-section { text-align: center; max-width: 700px; margin: 0 auto; }
+    .contact-title {
+      font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700;
+      margin-bottom: 24px;
+    }
+    .contact-text { font-size: 1.125rem; color: var(--muted); margin-bottom: 48px; }
+    .contact-links { display: flex; justify-content: center; gap: 16px; margin-bottom: 48px; }
+    .contact-link {
+      width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      font-size: 1.25rem; color: var(--muted); text-decoration: none;
+      transition: all 0.3s;
+    }
+    .contact-link:hover { color: var(--violet); border-color: var(--violet); transform: translateY(-4px); }
+    .contact-email {
+      font-size: 1.25rem; font-weight: 600;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    /* Footer */
+    footer {
+      padding: 48px; text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.875rem;
+    }
+
+    /* 3D Tilt Effect */
+    .tilt { transform-style: preserve-3d; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .bento { grid-template-columns: repeat(2, 1fr); }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+      .cert-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 120px 24px 80px; }
+      section { padding: 80px 24px; }
+      .bento { grid-template-columns: 1fr; }
+      .bento-card.large { grid-column: span 1; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .activities-list { grid-template-columns: 1fr; }
+      .cursor-dot, .cursor-outline { display: none; }
+      body { cursor: auto; }
+    }
+
+    /* Animations */
+    .reveal {
+      opacity: 0; transform: translateY(60px);
+      transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    /* Konami Code Easter Egg */
+    .konami-active .aurora::before { animation-duration: 3s; }
+    .konami-active .aurora::after { animation-duration: 2s; }
+    .konami-active .gradient-text { animation-duration: 0.5s; }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loader" id="loader">
+    <div class="loader-text">
+      <span>S</span><span>H</span><span>R</span><span>E</span><span>Y</span><span>A</span><span>.</span>
+    </div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-outline" id="cursor-outline"></div>
+
+  <!-- Mouse Glow -->
+  <div class="mouse-glow" id="mouse-glow"></div>
+
+  <!-- Background -->
+  <div class="aurora"></div>
+  <div class="noise"></div>
+
+  <!-- Navigation -->
+  <nav id="nav">
+    <div class="logo">shreya.dev</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#certifications">Certifications</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Open to opportunities</div>
+      <h1>
+        <div class="line"><span>Hi, I'm</span></div>
+        <div class="line"><span class="gradient-text glitch" data-text="Shreya Srivastava">Shreya Srivastava</span></div>
+        <div class="line"><span id="role-text">Cloud Developer</span></div>
+      </h1>
+      <p class="hero-sub">
+        B.Tech CSE (Cloud Computing) student at JUIT, building scalable cloud solutions 
+        and decentralized applications. AWS Certified Cloud Practitioner.
+      </p>
+      <div class="hero-buttons">
+        <a href="#projects" class="btn btn-primary">
+          <span><i class="fas fa-rocket"></i> View Projects</span>
+        </a>
+        <a href="#contact" class="btn btn-secondary">
+          <i class="fas fa-paper-plane"></i> Get In Touch
+        </a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>SCROLL</span>
+      <div class="line"></div>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee">
+    <div class="marquee-track">
+      <div class="marquee-content">
+        <span><span class="dot"></span> AWS Certified</span>
+        <span><span class="dot"></span> Cloud Computing</span>
+        <span><span class="dot"></span> Blockchain</span>
+        <span><span class="dot"></span> Web Development</span>
+        <span><span class="dot"></span> Smart Contracts</span>
+        <span><span class="dot"></span> Cybersecurity</span>
+        <span><span class="dot"></span> React.js</span>
+        <span><span class="dot"></span> Kubernetes</span>
+      </div>
+      <div class="marquee-content">
+        <span><span class="dot"></span> AWS Certified</span>
+        <span><span class="dot"></span> Cloud Computing</span>
+        <span><span class="dot"></span> Blockchain</span>
+        <span><span class="dot"></span> Web Development</span>
+        <span><span class="dot"></span> Smart Contracts</span>
+        <span><span class="dot"></span> Cybersecurity</span>
+        <span><span class="dot"></span> React.js</span>
+        <span><span class="dot"></span> Kubernetes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- About - Bento Grid -->
+  <section id="about">
+    <div class="section-header reveal">
+      <span class="section-label">01 // ABOUT</span>
+      <h2 class="section-title">Who I Am</h2>
+    </div>
+    <div class="bento">
+      <div class="bento-card large reveal tilt">
+        <div class="bento-icon"><i class="fas fa-user"></i></div>
+        <h3>About Me</h3>
+        <p>Computer Science student specializing in Cloud Computing at Jaypee University of Information Technology. 
+        Passionate about building secure, scalable cloud infrastructure and exploring blockchain technology. 
+        AWS Certified with hands-on experience in serverless architectures and Web3 development.</p>
+      </div>
+      <div class="bento-card reveal tilt">
+        <div class="bento-icon"><i class="fab fa-aws"></i></div>
+        <h3>Cloud Native</h3>
+        <p>AWS, Kubernetes, Docker, CI/CD pipelines, and serverless architecture.</p>
+      </div>
+      <div class="bento-card reveal tilt">
+        <div class="bento-icon"><i class="fab fa-ethereum"></i></div>
+        <h3>Blockchain</h3>
+        <p>Solidity smart contracts, Web3 dApps, and NFT development.</p>
+      </div>
+      <div class="bento-card large reveal tilt">
+        <div class="bento-icon"><i class="fas fa-graduation-cap"></i></div>
+        <h3>Education</h3>
+        <div class="edu-item">
+          <div class="edu-year">2022 - 2026</div>
+          <div class="edu-degree">B.Tech in Computer Science & Engineering (Cloud Computing)</div>
+          <div class="edu-school">Jaypee University of Information Technology, Waknaghat</div>
+          <div class="edu-score">CGPA: 7.94</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-year">2021</div>
+          <div class="edu-degree">Senior Secondary (CBSE)</div>
+          <div class="edu-school">Maharshi Patanjali Vidya Mandir, Prayagraj</div>
+          <div class="edu-score">90.8%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="section-header reveal">
+      <span class="section-label">02 // PROJECTS</span>
+      <h2 class="section-title">Featured Work</h2>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card reveal tilt">
+        <div class="project-image"><i class="fas fa-brain"></i></div>
+        <div class="project-content">
+          <div class="project-year">Ongoing</div>
+          <div class="project-tags">
+            <span class="project-tag">AI/ML</span>
+            <span class="project-tag">Transformers</span>
+            <span class="project-tag">NLP</span>
+          </div>
+          <h3 class="project-title">Ethical AI for Human Rights</h3>
+          <p class="project-desc">AI framework for detecting human rights violations in multilingual social media data.</p>
+          <ul class="project-highlights">
+            <li>Fine-tuned transformer models for classification</li>
+            <li>Expert-verified annotation protocols</li>
+            <li>Adversarial robustness techniques for reliability</li>
+          </ul>
+          <div class="project-links">
+            <a href="#" class="project-link"><i class="fas fa-file-alt"></i> Research</a>
+          </div>
+        </div>
+      </div>
+      <div class="project-card reveal tilt">
+        <div class="project-image"><i class="fas fa-ticket-alt"></i></div>
+        <div class="project-content">
+          <div class="project-year">2025</div>
+          <div class="project-tags">
+            <span class="project-tag">Solidity</span>
+            <span class="project-tag">React.js</span>
+            <span class="project-tag">MetaMask</span>
+            <span class="project-tag">Ethereum</span>
+          </div>
+          <h3 class="project-title">Web3 Ticketing System</h3>
+          <p class="project-desc">Decentralized ticketing dApp on Ethereum using NFT-based secure ticketing mechanisms.</p>
+          <ul class="project-highlights">
+            <li>NFT-based smart contracts for secure ticket issuance</li>
+            <li>MetaMask integration for wallet connectivity</li>
+            <li>Simulated real-world vulnerabilities in digital ownership</li>
+          </ul>
+          <div class="project-links">
+            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+          </div>
+        </div>
+      </div>
+      <div class="project-card reveal tilt">
+        <div class="project-image"><i class="fas fa-cloud"></i></div>
+        <div class="project-content">
+          <div class="project-year">2024</div>
+          <div class="project-tags">
+            <span class="project-tag">Flutter</span>
+            <span class="project-tag">Firebase</span>
+            <span class="project-tag">Firestore</span>
+          </div>
+          <h3 class="project-title">Cloud Form Submission App</h3>
+          <p class="project-desc">Cloud-based registration application with real-time data handling and scalable backend.</p>
+          <ul class="project-highlights">
+            <li>Integrated Firestore, Storage, and Authentication</li>
+            <li>Secure and real-time data handling</li>
+            <li>Seamless user data submission with scalable support</li>
+          </ul>
+          <div class="project-links">
+            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+          </div>
+        </div>
+      </div>
+      <div class="project-card reveal tilt">
+        <div class="project-image"><i class="fas fa-wallet"></i></div>
+        <div class="project-content">
+          <div class="project-year">2023</div>
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">Tkinter</span>
+            <span class="project-tag">SQLite</span>
+          </div>
+          <h3 class="project-title">Budget Tracker</h3>
+          <p class="project-desc">Desktop budget tracking tool with GUI to monitor income, expenses, and financial goals.</p>
+          <ul class="project-highlights">
+            <li>Designed GUI with Tkinter for easy data entry</li>
+            <li>SQLite database for transaction history</li>
+            <li>Manual testing for functional validation</li>
+          </ul>
+          <div class="project-links">
+            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills">
+    <div class="section-header reveal">
+      <span class="section-label">03 // SKILLS</span>
+      <h2 class="section-title">Tech Arsenal</h2>
+    </div>
+    <div class="skills-grid reveal">
+      <div class="skill-card tilt">
+        <h4><i class="fas fa-code"></i> Languages</h4>
+        <div class="skill-tags">
+          <span class="skill-tag">C/C++</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">HTML/CSS</span>
+        </div>
+      </div>
+      <div class="skill-card tilt">
+        <h4><i class="fas fa-palette"></i> Frontend</h4>
+        <div class="skill-tags">
+          <span class="skill-tag">React.js</span>
+          <span class="skill-tag">HTML5</span>
+          <span class="skill-tag">CSS3</span>
+          <span class="skill-tag">JavaScript</span>
+        </div>
+      </div>
+      <div class="skill-card tilt">
+        <h4><i class="fab fa-aws"></i> Cloud & DevOps</h4>
+        <div class="skill-tags">
+          <span class="skill-tag">AWS</span>
+          <span class="skill-tag">Kubernetes</span>
+          <span class="skill-tag">Docker</span>
+          <span class="skill-tag">CI/CD</span>
+        </div>
+      </div>
+      <div class="skill-card tilt">
+        <h4><i class="fas fa-database"></i> Databases & Tools</h4>
+        <div class="skill-tags">
+          <span class="skill-tag">SQLite</span>
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">Linux</span>
+          <span class="skill-tag">Firebase</span>
+        </div>
+      </div>
+      <div class="skill-card tilt">
+        <h4><i class="fas fa-shield-alt"></i> Security & Blockchain</h4>
+        <div class="skill-tags">
+          <span class="skill-tag">Network Security</span>
+          <span class="skill-tag">Solidity</span>
+          <span class="skill-tag">Web3</span>
+          <span class="skill-tag">Cybersecurity</span>
+        </div>
+      </div>
+      <div class="skill-card tilt">
+        <h4><i class="fas fa-users"></i> Soft Skills</h4>
+        <div class="skill-tags">
+          <span class="skill-tag">Leadership</span>
+          <span class="skill-tag">Communication</span>
+          <span class="skill-tag">Teamwork</span>
+          <span class="skill-tag">Problem Solving</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Certifications -->
+  <section id="certifications">
+    <div class="section-header reveal">
+      <span class="section-label">04 // CERTIFICATIONS</span>
+      <h2 class="section-title">Credentials</h2>
+    </div>
+    <div class="cert-grid reveal">
+      <div class="cert-card tilt">
+        <div class="cert-icon"><i class="fab fa-aws"></i></div>
+        <div class="cert-content">
+          <h4>AWS Certified Cloud Practitioner</h4>
+          <p>Amazon Web Services (CLF-C02)</p>
+          <div class="cert-date">January 2025</div>
+        </div>
+      </div>
+      <div class="cert-card tilt">
+        <div class="cert-icon"><i class="fas fa-cloud"></i></div>
+        <div class="cert-content">
+          <h4>Introduction to Cloud Computing</h4>
+          <p>Infosys Springboard</p>
+          <div class="cert-date">October 2024</div>
+        </div>
+      </div>
+      <div class="cert-card tilt">
+        <div class="cert-icon"><i class="fas fa-server"></i></div>
+        <div class="cert-content">
+          <h4>Cloud Computing Virtual Internship</h4>
+          <p>Code Alpha</p>
+          <div class="cert-date">June 2025</div>
+        </div>
+      </div>
+      <div class="cert-card tilt">
+        <div class="cert-icon"><i class="fas fa-chart-bar"></i></div>
+        <div class="cert-content">
+          <h4>Data Analytics Internship</h4>
+          <p>Flexing Data</p>
+          <div class="cert-date">July 2025</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Activities -->
+  <section id="activities">
+    <div class="section-header reveal">
+      <span class="section-label">05 // ACTIVITIES</span>
+      <h2 class="section-title">Beyond Code</h2>
+    </div>
+    <div class="activities-list reveal">
+      <div class="activity-item tilt">
+        <i class="fas fa-trophy"></i>
+        <span>IEEE Hackathon Participant</span>
+      </div>
+      <div class="activity-item tilt">
+        <i class="fas fa-lightbulb"></i>
+        <span>Smart India Hackathon Participant</span>
+      </div>
+      <div class="activity-item tilt">
+        <i class="fas fa-music"></i>
+        <span>Performer at College Fests & Open Mics</span>
+      </div>
+      <div class="activity-item tilt">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Co-organized Music Events & Stage Coordination</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="contact-section reveal">
+      <span class="section-label">06 // CONTACT</span>
+      <h2 class="contact-title">Let's Connect</h2>
+      <p class="contact-text">
+        Open to internship and full-time opportunities as a Software Developer, spanning Frontend, Backend, Cloud, and Blockchain development, with hands-on experience building real-world applications using React, AWS, and Ethereum-based systems.
+      </p>
+      <div class="contact-links">
+        <a href="https://www.linkedin.com/in/shreya-srivastava-79420233b" class="contact-link" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://github.com" class="contact-link" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+        <a href="tel:+919235110407" class="contact-link" title="Phone"><i class="fas fa-phone"></i></a>
+        <a href="mailto:ishreyasrivastava31@gmail.com" class="contact-link" title="Email"><i class="fas fa-envelope"></i></a>
+      </div>
+      <a href="mailto:ishreyasrivastava31@gmail.com" class="contact-email">ishreyasrivastava31@gmail.com</a>
+      <p style="margin-top: 16px; color: var(--muted); font-size: 1rem;">+91 9235110407</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>Designed & Built with 💜 by Shreya Srivastava</p>
+  </footer>
+
+  <script>
+    // Loading Screen
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1500);
+    });
+
+    // Custom Cursor
+    const dot = document.getElementById('cursor-dot');
+    const outline = document.getElementById('cursor-outline');
+    const glow = document.getElementById('mouse-glow');
+    
+    let mouseX = 0, mouseY = 0;
+    let outlineX = 0, outlineY = 0;
+    
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      dot.style.left = mouseX + 'px';
+      dot.style.top = mouseY + 'px';
+      glow.style.left = mouseX + 'px';
+      glow.style.top = mouseY + 'px';
+    });
+
+    function animateCursor() {
+      outlineX += (mouseX - outlineX) * 0.15;
+      outlineY += (mouseY - outlineY) * 0.15;
+      outline.style.left = outlineX + 'px';
+      outline.style.top = outlineY + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    document.querySelectorAll('a, button, .btn, .bento-card, .project-card, .skill-card, .cert-card, .activity-item').forEach(el => {
+      el.addEventListener('mouseenter', () => outline.classList.add('hover'));
+      el.addEventListener('mouseleave', () => outline.classList.remove('hover'));
+    });
+
+    // Nav scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 100);
+    });
+
+    // Role text rotation
+    const roles = ['Cloud Developer', 'Blockchain Enthusiast', 'Full-Stack Engineer', 'AWS Certified'];
+    let roleIndex = 0;
+    const roleText = document.getElementById('role-text');
+    
+    setInterval(() => {
+      roleText.style.opacity = 0;
+      roleText.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        roleIndex = (roleIndex + 1) % roles.length;
+        roleText.textContent = roles[roleIndex];
+        roleText.style.opacity = 1;
+        roleText.style.transform = 'translateY(0)';
+      }, 300);
+    }, 3000);
+    roleText.style.transition = 'all 0.3s ease';
+
+    // Scroll Reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const revealOnScroll = () => {
+      reveals.forEach(el => {
+        const top = el.getBoundingClientRect().top;
+        if (top < window.innerHeight - 100) el.classList.add('active');
+      });
+    };
+    window.addEventListener('scroll', revealOnScroll);
+    revealOnScroll();
+
+    // 3D Tilt Effect
+    document.querySelectorAll('.tilt').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = (y - centerY) / 20;
+        const rotateY = (centerX - x) / 20;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+      });
+    });
+
+    // Konami Code Easter Egg
+    const konami = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+    let konamiIndex = 0;
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode === konami[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konami.length) {
+          document.body.classList.add('konami-active');
+          konamiIndex = 0;
+          setTimeout(() => document.body.classList.remove('konami-active'), 5000);
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    });
+  </script>
+</body>
+</html>
